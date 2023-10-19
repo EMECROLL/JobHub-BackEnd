@@ -1,0 +1,20 @@
+const express = require("express");
+const cors = require("cors");
+const app = express();
+
+app.use(express.json());
+app.use(cors());
+
+// Importa y utiliza las rutas de ofertas laborales
+const jobOfferRoutes = require("./routes/ofertas_rutas");
+app.use("/api", jobOfferRoutes);
+
+// Importa y utiliza las rutas de usuarios
+// const userRoutes = require("./routes/userRoutes");
+// app.use("/api", userRoutes);
+
+const port = process.env.PORT || 3001;
+
+app.listen(port, () => {
+  console.log(`Servidor en ejecución en el puerto ${port}`);
+});
