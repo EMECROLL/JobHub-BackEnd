@@ -1,16 +1,11 @@
 const bd = require("../config/bd");
-const JobOffer = require("../models/JobOffer");
 
 // Lógica para crear una oferta laboral
 exports.createJobOffer = (req, res) => {
-  const { titulo, descripcion, empresa, tipoVacante } = req.body;
-  const logoUrl = `/logos/${req.files['logo'][0].originalname}`;
-  const imageUrl = `/imagenes/${req.files['imagen'][0].originalname}`;
+  const { empresa, logoUrl, imagenUrl, tipoVacante } = req.body; // Usar los nombres correctos aquí
 
-  const nuevaOferta = new JobOffer(titulo, descripcion, empresa, tipoVacante);
-
-  const query = "INSERT INTO ofertas_laborales (titulo, descripcion, empresa, tipo_vacante, logo_url, imagen_url) VALUES (?, ?, ?, ?, ?, ?)";
-  const values = [nuevaOferta.titulo, nuevaOferta.descripcion, nuevaOferta.empresa, nuevaOferta.tipoVacante, logoUrl, imageUrl];
+  const query = "INSERT INTO ofertas_laborales (empresa, logo_url, imagen_url, tipoVacante) VALUES (?, ?, ?, ?)";
+  const values = [empresa, logoUrl, imagenUrl, tipoVacante];
 
   bd.query(query, values, (err, result) => {
     if (err) {
@@ -25,7 +20,6 @@ exports.createJobOffer = (req, res) => {
 // Lógica para obtener todas las ofertas laborales
 exports.getJobOffers = (req, res) => {
   const query = "SELECT * FROM ofertas_laborales";
-
   bd.query(query, (err, ofertas) => {
     if (err) {
       console.error(err);
@@ -52,3 +46,15 @@ exports.getJobOfferById = (req, res) => {
     }
   });
 };
+
+
+
+const query = "SELECT * FROM ofertas_laborales WHERE tipo_vacante = ?";
+  bd.query(query, [tipoVacante], (err, ofertas) => {
+    if (err) {
+      console.error(err);
+      res.status(500).json({ error: "Error al obtener ofertas laborales" });
+    } else {
+      res.status(200).json(ofertas);
+    }
+  });

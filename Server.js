@@ -30,24 +30,32 @@ app.post("/registro", (req, res) => {
   )
 })
 
+// app.post('/inicioSesion', (req,res) => {
+//   const sql = "SELECT * FROM usuarios WHERE correo = ? AND contrasenia = ?";
+  
+//   db.query(sql, [req.body.correo, req.body.contrasenia], (error, datos) => {
+    
+//     if(sql.length > 0) {
+//       return res.json("Inicio de sesión exitoso");
+//     } else {
+//       return res.json("Credenciales incorrectas");
+//     }    
+//     if(error) return res.json("Error al iniciar sesión");
+//   })
+// })
+
 app.post('/inicioSesion', (req,res) => {
-
-  const correo = req.body.correo;
-  const contrasenia = req.body.contrasenia;
-
-  db.query("SELECT * FROM usuarios WHERE correo = ? AND contrasenia = ?", 
-    [correo,contrasenia],
-    (err, resultado) => {
-
-      if (err) {
-        res.send({err: err});
-      }
-
-      if(resultado.length > 0){
-        res.send(resultado);
-      } else {
-        res.send({message: "Correo/Contraseña incorrecta"});
-      }
+  const correo = req.body.correoLog
+  const contrasenia = req.body.contraseniaLog
+  
+  db.query("SELECT * FROM usuarios WHERE correo = ? AND contrasenia = ?", [correo, contrasenia], (err, result) => {
+    if(err) {
+      res.json(err);
+    }else if(result.length > 0) {
+      res.json("Inicio de sesión exitoso");
+    }else {
+      res.json("Credenciales incorrectas");
+    };
   })
 })
 

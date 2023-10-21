@@ -6,15 +6,15 @@ app.use(express.json());
 app.use(cors());
 
 // Importa y utiliza las rutas de ofertas laborales
-const jobOfferRoutes = require("./routes/ofertas_rutas");
+const jobOfferRoutes = require("./routes/ofertas_rutas.js");
 app.use("/api", jobOfferRoutes);
 
 // Importa y utiliza las rutas de usuarios
 // const userRoutes = require("./routes/userRoutes");
 // app.use("/api", userRoutes);
 
-const port = process.env.PORT || 3001;
+// const port = process.env.PORT || 3001;
 
-app.listen(port, () => {
-  console.log(`Servidor en ejecución en el puerto ${port}`);
+app.listen(3001, () => {
+  console.log(`Servidor en ejecución en el puerto ${3001}`);
 });
