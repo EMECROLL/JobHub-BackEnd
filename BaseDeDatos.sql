@@ -17,7 +17,7 @@ VALUES ('Desarrollador Web', 'Descripción de la oferta...', 'Google', 'Divisió
 INSERT INTO ofertas_laborales (titulo, descripcion, empresa, tipo_vacante, logo_url, imagen_url)
 VALUES ('Redes y telecomunicaciones', 'Descripción de la oferta...', 'Microsoft', 'División de Tecnología', 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/Microsoft_logo.svg/512px-Microsoft_logo.svg.png', 'https://www.experimenta.es/wp-content/uploads/2017/07/DuPont-Corian-Microsoft-Munich-Andreas-Frisch-GSP-architekten-5.jpg');
 INSERT INTO ofertas_laborales (titulo, descripcion, empresa, tipo_vacante, logo_url, imagen_url)
-VALUES ('Programador', 'Descripción de la oferta...', 'GBM +', 'División de Tecnologías', 'https://assets.website-files.com/632ddeb5d4d5b76a3759dad5/633efb0bf46b61b8ab88032e_GBM_K.svg', 'https://www.eleconomista.com.mx/__export/1594739720993/sites/eleconomista/img/2020/07/13/edificio_bmv__elr_1.jpg_554688468.jpg');
+VALUES ('Programador', 'Descripción de la oferta...', 'GBM +', 'División de Tecnología', 'https://assets.website-files.com/632ddeb5d4d5b76a3759dad5/633efb0bf46b61b8ab88032e_GBM_K.svg', 'https://www.eleconomista.com.mx/__export/1594739720993/sites/eleconomista/img/2020/07/13/edificio_bmv__elr_1.jpg_554688468.jpg');
 
 
 INSERT INTO ofertas_laborales (titulo, descripcion, empresa, tipo_vacante, logo_url, imagen_url)
@@ -56,4 +56,5 @@ VALUES ('Efectos especiales', 'Descripción de la oferta...', 'Universal Studios
 SELECT * FROM ofertas_laborales WHERE id = 1;
 
 SELECT * FROM ofertas_laborales;
+
 
