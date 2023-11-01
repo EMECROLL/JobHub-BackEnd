@@ -1,4 +1,4 @@
-const bd = require("../config/bd");
+const bd = require("../config/bd"); 
 
 // Lógica para crear una oferta laboral
 exports.createJobOffer = (req, res) => {

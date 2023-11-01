@@ -9,6 +9,9 @@ app.use(cors());
 const jobOfferRoutes = require("./routes/ofertas_rutas.js");
 app.use("/api", jobOfferRoutes);
 
+const userRoutes = require("./routes/usuarios.routes.js")
+app.use(userRoutes)
+
 // Importa y utiliza las rutas de usuarios
 // const userRoutes = require("./routes/userRoutes");
 // app.use("/api", userRoutes);

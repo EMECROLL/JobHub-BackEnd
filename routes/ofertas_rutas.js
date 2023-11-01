@@ -2,7 +2,7 @@
 const express = require('express');
 const multer = require('multer');
 const bd = require("../config/bd");
-const router = express.Router();
+const router = express.Router(); 
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
