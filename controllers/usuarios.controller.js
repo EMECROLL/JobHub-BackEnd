@@ -35,7 +35,7 @@ const getUser = (req, res) => {
 const createUser = (req, res) => {
     const { nombre, apellido, correo, contrasenia } = req.body;
     
-    bd.query('INSERT INTO usuarios(nombre,apellido,correo,contrasenia) VALUES (?,?,?,?)', [nombre, apellido, correo, contrasenia], (err, result) => {
+    bd.query('INSERT INTO usuarios(nombre,apellido,correo,contrasenia, tipo_usuario) VALUES (?,?,?,?,2)', [nombre, apellido, correo, contrasenia], (err, result) => {
         if (err) {
             console.error(err);
             return res.status(500).json({ message: err.message });

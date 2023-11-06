@@ -62,12 +62,27 @@ SELECT * FROM ofertas_laborales;
 
 -- Manuel 
 
+-- Tabla de tipos de usuario
+CREATE TABLE tipo_usuario (
+    id_tipo_usuario INT PRIMARY KEY,
+    tipo VARCHAR(50)
+);
+
+-- Insertar los tipos de usuario
+INSERT INTO tipo_usuario (id_tipo_usuario, tipo) VALUES (1, 'admin');
+INSERT INTO tipo_usuario (id_tipo_usuario, tipo) VALUES (2, 'usuario registrado');
+
 CREATE TABLE usuarios(
 	id_usuario INT PRIMARY KEY AUTO_INCREMENT,
     nombre VARCHAR(100),
     apellido VARCHAR(100),
     correo VARCHAR(100),
-    contrasenia VARCHAR(100)
+    contrasenia VARCHAR(100),
+    tipo_usuario INT,
+    FOREIGN KEY (tipo_usuario) REFERENCES tipo_usuario (id_tipo_usuario)
 );
+
+INSERT INTO usuarios(nombre, apellido, correo, contrasenia, tipo_usuario) 
+VALUES (null,null,"root", "root", 1);
 
 SELECT * FROM usuarios;
