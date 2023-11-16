@@ -13,6 +13,8 @@ router.put("/users/:id", userController.updateUser); //* Actualizar un usuario
 
 router.delete("/users/:id", userController.deleteUser); //* Eliminar un usuario
 
+router.post('/signup', userController.signup); //*  Corroborrar que el correo no exista en la BD
+
 router.post("/login", userController.login); //* Validar que el correo y la contraseña coincidan
 
 module.exports = router;
