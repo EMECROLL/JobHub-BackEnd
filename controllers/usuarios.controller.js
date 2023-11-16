@@ -135,21 +135,27 @@ const login = (req, res) => {
             return res.status(404).json({ message: "El correo no existe en la base de datos" });
         }
 
-        //* Comparar contrasenias encriptadas
-        bcrypt.compare(contrasenia, result[0].contrasenia, (errorComparar, comparar) => {
-            if (errorComparar) {
-                console.error(errorComparar);
-                return res.status(500).json({ message: 'Error al comparar contraseñas' });
-            }
-
-            if (!comparar) {
+        if(result[0].tipo_usuario === 1){
+            if (result[0].contrasenia !== contrasenia) {
                 return res.status(401).json({ message: "Credenciales incorrectas" });
             }
+        } else {
+            //* Comparar contrasenias encriptadas
+            bcrypt.compare(contrasenia, result[0].contrasenia, (errorComparar, comparar) => {
+                if (errorComparar) {
+                    console.error(errorComparar);
+                    return res.status(500).json({ message: 'Error al comparar contraseñas' });
+                }
 
-            //? Contraseña válida
-            res.json(result[0]);
-            console.log(result[0])
-        });
+                if (!comparar) {
+                    return res.status(401).json({ message: "Credenciales incorrectas" });
+                }
+
+                
+            });
+        }
+        //? Contraseña válida
+        res.json(result[0]);
     });
 };
 

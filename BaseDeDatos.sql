@@ -85,4 +85,5 @@ CREATE TABLE usuarios(
 INSERT INTO usuarios(nombre, apellido, correo, contrasenia, tipo_usuario) 
 VALUES (null,null,"root", "root", 1);
 
+USE jobhub;
 SELECT * FROM usuarios;
