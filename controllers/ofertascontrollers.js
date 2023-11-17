@@ -1,11 +1,10 @@
 const bd = require("../config/bd"); 
-
 // Lógica para crear una oferta laboral
 exports.createJobOffer = (req, res) => {
-  const { empresa, logoUrl, imagenUrl, tipoVacante } = req.body; // Usar los nombres correctos aquí
+  const { empresa, descripcion, logoUrl, imagenUrl, tipoVacante, num_telefonico } = req.body;
 
-  const query = "INSERT INTO ofertas_laborales (empresa, logo_url, imagen_url, tipoVacante) VALUES (?, ?, ?, ?)";
-  const values = [empresa, logoUrl, imagenUrl, tipoVacante];
+  const query = "INSERT INTO ofertas_laborales (empresa, descripcion, logo_url, imagen_url, tipoVacante, num_telefonico) VALUES (?, ?, ?, ?, ?, ?)";
+  const values = [empresa, descripcion, logoUrl, imagenUrl, tipoVacante, num_telefonico];
 
   bd.query(query, values, (err, result) => {
     if (err) {

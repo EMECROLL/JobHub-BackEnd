@@ -72,6 +72,8 @@ CREATE TABLE tipo_usuario (
 INSERT INTO tipo_usuario (id_tipo_usuario, tipo) VALUES (1, 'admin');
 INSERT INTO tipo_usuario (id_tipo_usuario, tipo) VALUES (2, 'usuario registrado');
 
+
+
 CREATE TABLE usuarios(
 	id_usuario INT PRIMARY KEY AUTO_INCREMENT,
     nombre VARCHAR(100),
@@ -85,5 +87,16 @@ CREATE TABLE usuarios(
 INSERT INTO usuarios(nombre, apellido, correo, contrasenia, tipo_usuario) 
 VALUES (null,null,"root", "root", 1);
 
-USE jobhub;
 SELECT * FROM usuarios;
+
+select * from ofertas_laborales;
+
+ALTER TABLE ofertas_laborales
+ADD COLUMN usuario_id INT,
+ADD FOREIGN KEY (usuario_id) REFERENCES usuarios(id_usuario);
+
+/* Para insertar las ofertas al usuario id=1*/
+UPDATE ofertas_laborales
+SET usuario_id = 1
+WHERE id = 1;
+
