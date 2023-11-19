@@ -17,4 +17,8 @@ router.post('/signup', userController.signup); //*  Corroborrar que el correo no
 
 router.post("/login", userController.login); //* Validar que el correo y la contraseña coincidan
 
+router.post("/forgot-password", userController.initiatePasswordReset); //* Correo para restablecer la contraseña
+
+router.post("/reset-password", userController.resetPassword); //* Restablecer la contraseña
+
 module.exports = router;

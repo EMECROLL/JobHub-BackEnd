@@ -1,5 +1,7 @@
 const bd = require("../config/bd");
 const bcrypt = require('bcrypt');
+const crypto = require('crypto');
+const { transporter } = require('../config/nodemailer/mailer.js')
 
 const getUsers = (req, res) => {
     bd.query(`SELECT * FROM usuarios`, (err, result) => {
@@ -160,6 +162,80 @@ const login = (req, res) => {
     });
 };
 
+//* Recuperar contraseña
+
+const generateResetToken = () => {
+    return crypto.randomBytes(20).toString('hex');
+  };
+  
+  const sendResetEmail = (email, token) => {
+  
+    const resetLink = `http://localhost:3000/reset-password/${token}`;
+    const mailOptions = {
+        from: 'empleos.jobhub@gmail.com',
+        to: email,
+        subject: 'Restablecer Contraseña',
+        text: `Para restablecer tu contraseña, haz clic en el siguiente enlace: ${resetLink}`,
+    };
+    return transporter.sendMail(mailOptions);
+  };
+
+  const initiatePasswordReset = async (req, res) => {
+    const { email } = req.body;
+  
+    //? Generar token
+    const resetToken = generateResetToken();
+  
+    //? Establecer la expiración del token
+    const resetTokenExpiresAt = new Date();
+    resetTokenExpiresAt.setHours(resetTokenExpiresAt.getHours() + 1);
+  
+    try {
+      //? Actualizar la base de datos con el token y su expiración
+      await bd.query(
+        'UPDATE usuarios SET reset_token = ?, reset_token_expires_at = ? WHERE correo = ?',
+        [resetToken, resetTokenExpiresAt, email]
+      );
+  
+      //? Enviar el correo electrónico con el enlace de restablecimiento
+      await sendResetEmail(email, resetToken);
+  
+      res.status(200).json({ message: 'Se ha enviado un enlace de restablecimiento a tu correo electrónico.' });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Error al iniciar el restablecimiento de contraseña.' });
+    }
+  };
+
+const resetPassword = async (req, res) => {
+    const { token, newPassword } = req.body;
+  
+    try {
+      // Verificar si el token es válido y aún no ha expirado
+      const result = await bd.query(
+        'SELECT * FROM usuarios WHERE reset_token = ? AND reset_token_expires_at > NOW()',
+        [token]
+      );
+  
+      if (result.length === 0) {
+        // Si no se encuentra un usuario con ese token o el token ha expirado
+        return res.status(400).json({ message: 'El enlace de restablecimiento no es válido o ha expirado.' });
+      }
+  
+      // Actualizar la contraseña del usuario
+      await bd.query('UPDATE usuarios SET contrasenia = ? WHERE reset_token = ?', [newPassword, token]);
+  
+      // Limpiar el token y la fecha de expiración en la base de datos
+      await bd.query('UPDATE usuarios SET reset_token = NULL, reset_token_expires_at = NULL WHERE reset_token = ?', [token]);
+  
+      return res.status(200).json({ message: 'Contraseña restablecida exitosamente.' });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ message: 'Error al restablecer la contraseña.' });
+    }
+  };
+  
+
 module.exports = {
     getUsers,
     getUser,
@@ -167,5 +243,7 @@ module.exports = {
     updateUser,
     deleteUser,
     signup,
-    login
+    login,
+    initiatePasswordReset,
+    resetPassword
 };
