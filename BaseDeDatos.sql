@@ -99,4 +99,3 @@ ADD FOREIGN KEY (usuario_id) REFERENCES usuarios(id_usuario);
 UPDATE ofertas_laborales
 SET usuario_id = 1
 WHERE id = 1;
-

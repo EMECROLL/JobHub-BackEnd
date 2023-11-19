@@ -34,7 +34,7 @@ const getUser = (req, res) => {
 
 
 const createUser = (req, res) => {
-    const { nombre, apellido, correo, contrasenia } = req.body;
+    const { nombre, apellido, correo, contrasenia, tipo_usuario } = req.body;
 
     //* Encriptar la contraseña
     bcrypt.hash(contrasenia, 10, (err, hash) => {
@@ -43,7 +43,7 @@ const createUser = (req, res) => {
             return res.status(500).json({ message: 'Error al encriptar la contraseña' });
         }
 
-        bd.query('INSERT INTO usuarios(nombre, apellido, correo, contrasenia, tipo_usuario) VALUES (?,?,?,?,2)', [nombre, apellido, correo, hash], (err, result) => {
+        bd.query('INSERT INTO usuarios(nombre, apellido, correo, contrasenia, tipo_usuario) VALUES (?,?,?,?,?)', [nombre, apellido, correo, hash, tipo_usuario], (err, result) => {
             if (err) {
                 console.error(err);
                 return res.status(500).json({ message: err.message });
@@ -53,7 +53,8 @@ const createUser = (req, res) => {
                 id: result.insertId,
                 nombre,
                 apellido,
-                correo
+                correo,
+                tipo_usuario
             });
         });
     });
