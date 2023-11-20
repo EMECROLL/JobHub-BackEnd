@@ -1,24 +1,14 @@
 const express = require('express');
-const multer = require('multer');
 const bd = require("../config/bd");
 const router = express.Router();
-const storage = multer.memoryStorage();
-const upload = multer({ storage });
 
-router.post('/ofertas-laborales', upload.fields([{ name: 'logo', maxCount: 1 }, { name: 'imagen', maxCount: 1 }]), (req, res) => {
-  const { empresa, descripcion, tipoVacante, num_telefonico } = req.body;
+// Ruta para crear una oferta laboral
+router.post('/ofertas-laborales/:idUsuario', (req, res) => {
+  const { empresa, descripcion, logoUrl, imagenUrl, tipoVacante, num_telefonico } = req.body;
+  const idUsuario = req.params.idUsuario;
 
-  if (!req.files || !req.files['logo'] || !req.files['imagen']) {
-    return res.status(400).json({ error: "Campos de logo e imagen no encontrados en la solicitud" });
-  }
-
-  const logo = req.files['logo'][0];
-  const imagen = req.files['imagen'][0];
-  const logo_url = `/logos/${logo.originalname}`;
-  const imagen_url = `/imagenes/${imagen.originalname}`;
-
-  const query = "INSERT INTO ofertas_laborales (empresa, descripcion, logo_url, imagen_url, tipoVacante, num_telefonico) VALUES (?, ?, ?, ?, ?, ?)";
-  const values = [empresa, descripcion, logo_url, imagen_url, tipoVacante, num_telefonico];
+  const query = "INSERT INTO ofertas_laborales (empresa, descripcion, logo_url, imagen_url, tipoVacante, num_telefonico, usuario_id) VALUES (?, ?, ?, ?, ?, ?, ?)";
+  const values = [empresa, descripcion, logoUrl, imagenUrl, tipoVacante, num_telefonico, idUsuario];
 
   bd.query(query, values, (err, result) => {
     if (err) {
@@ -30,22 +20,19 @@ router.post('/ofertas-laborales', upload.fields([{ name: 'logo', maxCount: 1 }, 
   });
 });
 
-
+// Ruta para obtener todas las ofertas laborales
 router.get('/ofertas-laborales', (req, res) => {
   bd.query(`SELECT * FROM ofertas_laborales`, (err, result) => {
     if (err) {
-      console.error(err); // Imprime el mensaje de error en la consola para diagnóstico
-      res.status(500).send(err); // Envía el mensaje de error en la respuesta
+      console.error(err);
+      res.status(500).json({ error: "Error al obtener las ofertas laborales" });
     } else {
-      if (result.length > 0) {
-        res.status(200).json(result);
-      } else {
-        res.status(400).send('Datos no existentes');
-      }
+      res.status(200).json(result);
     }
   });
 });
 
+// Ruta para obtener una oferta laboral por ID
 router.get('/ofertas-laborales/:id', (req, res) => {
   const id = req.params.id;
   const query = "SELECT * FROM ofertas_laborales WHERE id = ?";
@@ -62,22 +49,22 @@ router.get('/ofertas-laborales/:id', (req, res) => {
   });
 });
 
-router.get('/ofertas-laborales/:tipoVacante', (req, res) => {
+// Ruta para obtener ofertas laborales por tipo de vacante
+router.get('/ofertas-laborales/tipo/:tipoVacante', (req, res) => {
   const tipoVacante = req.params.tipoVacante;
   const query = "SELECT * FROM ofertas_laborales WHERE tipoVacante = ?";
 
   bd.query(query, [tipoVacante], (err, ofertas) => {
     if (err) {
       console.error(err);
-      res.status(500).json({ error: "Error al obtener las ofertas laborales" });
-    } else if (ofertas.length > 0) {
-      res.status(200).json(ofertas);
+      res.status(500).json({ error: "Error al obtener ofertas laborales" });
     } else {
-      res.status(404).json({ error: "Oferta laboral no encontrada" });
+      res.status(200).json(ofertas);
     }
   });
 });
 
+// Ruta para obtener ofertas laborales por ID de usuario
 router.get('/ofertas-laborales-usuario/:idUsuario', (req, res) => {
   const idUsuario = req.params.idUsuario;
   const query = "SELECT * FROM ofertas_laborales WHERE usuario_id = ?";
@@ -94,5 +81,37 @@ router.get('/ofertas-laborales-usuario/:idUsuario', (req, res) => {
   });
 });
 
+// Ruta para actualizar una oferta laboral por ID
+router.put('/ofertas-laborales/:id', (req, res) => {
+  const { empresa, descripcion, logoUrl, imagenUrl, tipoVacante, num_telefonico } = req.body;
+  const id = req.params.id;
+
+  const query = "UPDATE ofertas_laborales SET empresa=?, descripcion=?, logo_url=?, imagen_url=?, tipoVacante=?, num_telefonico=? WHERE id=?";
+  const values = [empresa, descripcion, logoUrl, imagenUrl, tipoVacante, num_telefonico, id];
+
+  bd.query(query, values, (err, result) => {
+    if (err) {
+      console.error(err);
+      res.status(500).json({ error: "Error al actualizar la oferta laboral" });
+    } else {
+      res.status(200).json({ mensaje: "Oferta laboral actualizada con éxito" });
+    }
+  });
+});
+
+// Ruta para eliminar una oferta laboral por ID
+router.delete('/ofertas-laborales/:id', (req, res) => {
+  const id = req.params.id;
+  const query = "DELETE FROM ofertas_laborales WHERE id = ?";
+
+  bd.query(query, [id], (err, result) => {
+    if (err) {
+      console.error(err);
+      res.status(500).json({ error: "Error al eliminar la oferta laboral" });
+    } else {
+      res.status(200).json({ mensaje: "Oferta laboral eliminada con éxito" });
+    }
+  });
+});
 
 module.exports = router;
