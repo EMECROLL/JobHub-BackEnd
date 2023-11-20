@@ -99,3 +99,8 @@ ADD FOREIGN KEY (usuario_id) REFERENCES usuarios(id_usuario);
 UPDATE ofertas_laborales
 SET usuario_id = 1
 WHERE id = 1;
+
+-- Recuperar contraseña
+ALTER TABLE usuarios
+ADD COLUMN reset_token VARCHAR(255),
+ADD COLUMN reset_token_expires_at TIMESTAMP;
