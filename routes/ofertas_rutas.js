@@ -2,13 +2,30 @@ const express = require('express');
 const bd = require("../config/bd");
 const router = express.Router();
 
-// Ruta para crear una oferta laboral
+// Ruta para crear una oferta laboral por usuario
 router.post('/ofertas-laborales/:idUsuario', (req, res) => {
   const { empresa, descripcion, logoUrl, imagenUrl, tipoVacante, num_telefonico } = req.body;
   const idUsuario = req.params.idUsuario;
 
   const query = "INSERT INTO ofertas_laborales (empresa, descripcion, logo_url, imagen_url, tipoVacante, num_telefonico, usuario_id) VALUES (?, ?, ?, ?, ?, ?, ?)";
   const values = [empresa, descripcion, logoUrl, imagenUrl, tipoVacante, num_telefonico, idUsuario];
+
+  bd.query(query, values, (err, result) => {
+    if (err) {
+      console.error(err);
+      res.status(500).json({ error: "Error al crear la oferta laboral" });
+    } else {
+      res.status(201).json({ mensaje: "Oferta laboral creada con éxito" });
+    }
+  });
+});
+
+// Ruta para crear una oferta laboral
+router.post('/ofertas-laborales', (req, res) => {
+  const { empresa, descripcion, logoUrl, imagenUrl, tipoVacante, num_telefonico } = req.body;
+
+  const query = "INSERT INTO ofertas_laborales (empresa, descripcion, logo_url, imagen_url, tipoVacante, num_telefonico) VALUES (?, ?, ?, ?, ?, ?)";
+  const values = [empresa, descripcion, logoUrl, imagenUrl, tipoVacante, num_telefonico];
 
   bd.query(query, values, (err, result) => {
     if (err) {
