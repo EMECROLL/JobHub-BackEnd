@@ -104,3 +104,13 @@ WHERE id = 1;
 ALTER TABLE usuarios
 ADD COLUMN reset_token VARCHAR(255),
 ADD COLUMN reset_token_expires_at TIMESTAMP;
+
+-- Tabla del formulario de contactos
+CREATE TABLE formulario (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    FormNombre VARCHAR(255),
+    FormMensaje VARCHAR(255),
+    FormNumero INT,
+    FormCorreo VARCHAR(255)
+);
+INSERT INTO formulario(FormNombre, FormMensaje, FormNumero, FormCorreo) VALUES ("Pepe ejemplo", "mensaje de ejemplo", 935, "ejemplo@correo.com");

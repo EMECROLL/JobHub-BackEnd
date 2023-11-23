@@ -12,6 +12,9 @@ app.use("/api", jobOfferRoutes);
 const userRoutes = require("./routes/usuarios.routes.js")
 app.use(userRoutes)
 
+const formRoutes = require("./routes/apirafa.js")
+app.use(formRoutes)
+
 // Importa y utiliza las rutas de usuarios
 // const userRoutes = require("./routes/userRoutes");
 // app.use("/api", userRoutes);
