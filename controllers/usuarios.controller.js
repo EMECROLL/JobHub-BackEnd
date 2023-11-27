@@ -36,14 +36,7 @@ const getUser = (req, res) => {
 const createUser = (req, res) => {
     const { nombre, apellido, correo, contrasenia, tipo_usuario } = req.body;
 
-    //* Encriptar la contraseña
-    bcrypt.hash(contrasenia, 10, (err, hash) => {
-        if (err) {
-            console.error(err);
-            return res.status(500).json({ message: 'Error al encriptar la contraseña' });
-        }
-
-        bd.query('INSERT INTO usuarios(nombre, apellido, correo, contrasenia, tipo_usuario) VALUES (?,?,?,?,?)', [nombre, apellido, correo, hash, tipo_usuario], (err, result) => {
+            bd.query('INSERT INTO usuarios(nombre, apellido, correo, contrasenia, tipo_usuario) VALUES (?,?,?,?,?)', [nombre, apellido, correo, contrasenia, tipo_usuario], (err, result) => {
             if (err) {
                 console.error(err);
                 return res.status(500).json({ message: err.message });
@@ -57,7 +50,6 @@ const createUser = (req, res) => {
                 tipo_usuario
             });
         });
-    });
 };
 
 const updateUser = (req, res) => {
@@ -150,26 +142,38 @@ const login = (req, res) => {
             return res.status(404).json({ message: "El correo no existe en la base de datos" });
         }
 
-        if(result[0].tipo_usuario === 1){
-            if (result[0].contrasenia !== contrasenia) {
+        //* Comparar contrasenias encriptadas
+        bcrypt.compare(contrasenia, result[0].contrasenia, (errorComparar, comparar) => {
+            if (errorComparar) {
+                console.error(errorComparar);
+                return res.status(500).json({ message: 'Error al comparar contraseñas' });
+            }
+
+            if (!comparar) {
                 return res.status(401).json({ message: "Credenciales incorrectas" });
             }
-        } else {
-            //* Comparar contrasenias encriptadas
-            bcrypt.compare(contrasenia, result[0].contrasenia, (errorComparar, comparar) => {
-                if (errorComparar) {
-                    console.error(errorComparar);
-                    return res.status(500).json({ message: 'Error al comparar contraseñas' });
-                }
 
-                if (!comparar) {
-                    return res.status(401).json({ message: "Credenciales incorrectas" });
-                }
+            //* Contraseña válida
+            res.json(result[0]);
+        });
+    });
+};
 
-                
-            });
+//* Login Google
+const loginGoogle = (req, res) => {
+    const { correo } = req.body;
+
+    bd.query('SELECT * FROM usuarios WHERE correo = ?', [correo], (err, result) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).json({ message: err.message });
         }
-        //? Contraseña válida
+
+        if (result.length === 0) {
+            return res.status(404).json({ message: "El correo no existe en la base de datos" });
+        }
+
+        //* Usuario válido
         res.json(result[0]);
     });
 };
@@ -246,6 +250,7 @@ module.exports = {
     deleteUser,
     signup,
     login,
+    loginGoogle,
     initiatePasswordReset,
     resetPassword
 };

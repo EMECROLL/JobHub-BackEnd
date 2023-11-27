@@ -22,10 +22,10 @@ router.post('/ofertas-laborales/:idUsuario', (req, res) => {
 
 // Ruta para crear una oferta laboral
 router.post('/ofertas-laborales', (req, res) => {
-  const { empresa, descripcion, logoUrl, imagenUrl, tipoVacante, num_telefonico } = req.body;
+  const { titulo, empresa, descripcion, logoUrl, imagenUrl, tipoVacante, num_telefonico } = req.body;
 
-  const query = "INSERT INTO ofertas_laborales (empresa, descripcion, logo_url, imagen_url, tipoVacante, num_telefonico) VALUES (?, ?, ?, ?, ?, ?)";
-  const values = [empresa, descripcion, logoUrl, imagenUrl, tipoVacante, num_telefonico];
+  const query = "INSERT INTO ofertas_laborales (titulo, empresa, descripcion, logo_url, imagen_url, tipoVacante, num_telefonico) VALUES (?,?, ?, ?, ?, ?, ?)";
+  const values = [titulo,empresa, descripcion, logoUrl, imagenUrl, tipoVacante, num_telefonico];
 
   bd.query(query, values, (err, result) => {
     if (err) {
@@ -100,11 +100,11 @@ router.get('/ofertas-laborales-usuario/:idUsuario', (req, res) => {
 
 // Ruta para actualizar una oferta laboral por ID
 router.put('/ofertas-laborales/:id', (req, res) => {
-  const { empresa, descripcion, logoUrl, imagenUrl, tipoVacante, num_telefonico } = req.body;
+  const {titulo, empresa, descripcion, logoUrl, imagenUrl, tipoVacante, num_telefonico } = req.body;
   const id = req.params.id;
 
-  const query = "UPDATE ofertas_laborales SET empresa=?, descripcion=?, logo_url=?, imagen_url=?, tipoVacante=?, num_telefonico=? WHERE id=?";
-  const values = [empresa, descripcion, logoUrl, imagenUrl, tipoVacante, num_telefonico, id];
+  const query = "UPDATE ofertas_laborales SET titulo=?, empresa=?, descripcion=?, logo_url=?, imagen_url=?, tipoVacante=?, num_telefonico=? WHERE id=?";
+  const values = [titulo, empresa, descripcion, logoUrl, imagenUrl, tipoVacante, num_telefonico, id];
 
   bd.query(query, values, (err, result) => {
     if (err) {
