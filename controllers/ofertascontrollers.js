@@ -13,6 +13,8 @@ exports.createJobOffer = (req, res) => {
       console.error(err);
       res.status(500).json({ error: "Error al crear la oferta laboral" });
     } else {
+      // Actualiza el contador de ofertas laborales
+      getJobOffersCount();
       res.status(201).json({ mensaje: "Oferta laboral creada con éxito" });
     }
   });
@@ -93,7 +95,24 @@ exports.deleteJobOfferById = (req, res) => {
       console.error(err);
       res.status(500).json({ error: "Error al eliminar la oferta laboral" });
     } else {
+      // Después de eliminar la oferta laboral con éxito, actualiza el contador
+      jobOffersCount--;
+      getJobOffersCount(); // Actualiza el contador antes de enviar la respuesta
       res.status(200).json({ mensaje: "Oferta laboral eliminada con éxito" });
+    }
+  });
+};
+
+exports.getJobOffersCount = (req, res) => {
+  const query = "SELECT COUNT(*) AS total FROM ofertas_laborales";
+
+  bd.query(query, (err, result) => {
+    if (err) {
+      console.error(err);
+      res.status(500).json({ error: "Error al obtener el recuento de ofertas laborales" });
+    } else {
+      const totalCount = result[0].total;
+      res.status(200).json({ total: totalCount });
     }
   });
 };
