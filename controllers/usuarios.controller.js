@@ -36,45 +36,99 @@ const getUser = (req, res) => {
 const createUser = (req, res) => {
     const { nombre, apellido, correo, contrasenia, tipo_usuario } = req.body;
 
-            bd.query('INSERT INTO usuarios(nombre, apellido, correo, contrasenia, tipo_usuario) VALUES (?,?,?,?,?)', [nombre, apellido, correo, contrasenia, tipo_usuario], (err, result) => {
+    bd.query('SELECT * FROM usuarios WHERE correo = ?', [correo], (err, result) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).json({ message: err.message });
+        }
+
+        if (result.length > 0) {
+            return res.status(409).json({ message: "El correo ya existe en la base de datos" });
+        }
+
+        //* Encriptar la contraseña
+        bcrypt.hash(contrasenia, 10, (err, hash) => {
             if (err) {
                 console.error(err);
-                return res.status(500).json({ message: err.message });
+                return res.status(500).json({ message: 'Error al encriptar la contraseña' });
             }
 
-            res.json({
-                id: result.insertId,
-                nombre,
-                apellido,
-                correo,
-                tipo_usuario
-            });
-        });
+            bd.query('INSERT INTO usuarios(nombre, apellido, correo, contrasenia, tipo_usuario) VALUES (?,?,?,?,?)', [nombre, apellido, correo, hash, tipo_usuario], (err, result) => {
+                if (err) {
+                    console.error(err);
+                    return res.status(500).json({ message: err.message });
+                }
+
+                res.json({
+                    id: result.insertId,
+                    nombre,
+                    apellido,
+                    correo
+                })
+            })
+        })
+    });
 };
 
 const updateUser = (req, res) => {
     const { nombre, apellido, correo, contrasenia, tipo_usuario } = req.body;
 
-    //? Encriptar la contraseña
-    bcrypt.hash(contrasenia, 10, (err, hash) => {
+    // Validar que el ID de usuario sea proporcionado en los parámetros de la solicitud
+    if (!req.params.id) {
+        return res.status(400).json({ message: 'ID de usuario no proporcionado' });
+    }
+
+    // Validar que el usuario exista en la base de datos antes de intentar la actualización
+    bd.query('SELECT * FROM usuarios WHERE id_usuario = ?', [req.params.id], (err, userResult) => {
         if (err) {
             console.error(err);
-            return res.status(500).json({ message: 'Error al encriptar la contraseña' });
+            return res.status(500).json({ message: err.message });
         }
 
-        //? Actualizar la base de datos
-        bd.query('UPDATE usuarios SET nombre=?, apellido=?, correo=?, contrasenia=?, tipo_usuario=? WHERE id_usuario=?',
-            [nombre, apellido, correo, hash, tipo_usuario, req.params.id],
-            (err, result) => {
+        if (userResult.length === 0) {
+            return res.status(404).json({ message: 'Usuario no encontrado en la base de datos' });
+        }
+
+        // Encriptar la contraseña solo si se proporciona en la solicitud
+        if (contrasenia) {
+            bcrypt.hash(contrasenia, 10, (err, hash) => {
                 if (err) {
                     console.error(err);
-                    return res.status(500).json({ message: err.message });
+                    return res.status(500).json({ message: 'Error al encriptar la contraseña' });
                 }
-                res.json(result);
-            }
-        );
+
+                // Actualizar la base de datos con la nueva información
+                bd.query(
+                    'UPDATE usuarios SET nombre=?, apellido=?, correo=?, contrasenia=?, tipo_usuario=? WHERE id_usuario=?',
+                    [nombre, apellido, correo, hash, tipo_usuario, req.params.id],
+                    (err, updateResult) => {
+                        if (err) {
+                            console.error(err);
+                            return res.status(500).json({ message: err.message });
+                        }
+
+                        res.json(updateResult);
+                    }
+                );
+            });
+        } else {
+            // Si no se proporciona una nueva contraseña, actualizar la base de datos sin encriptarla
+            bd.query(
+                'UPDATE usuarios SET nombre=?, apellido=?, correo=?, tipo_usuario=? WHERE id_usuario=?',
+                [nombre, apellido, correo, tipo_usuario, req.params.id],
+                (err, updateResult) => {
+                    if (err) {
+                        console.error(err);
+                        return res.status(500).json({ message: err.message });
+                    }
+
+                    res.json(updateResult);
+                }
+            );
+        }
     });
 };
+
 
 
 const deleteUser = (req, res) => {

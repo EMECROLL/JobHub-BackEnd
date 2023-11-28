@@ -4,11 +4,11 @@ const router = express.Router();
 
 // Ruta para crear una oferta laboral por usuario
 router.post('/ofertas-laborales/:idUsuario', (req, res) => {
-  const { empresa, descripcion, logoUrl, imagenUrl, tipoVacante, num_telefonico } = req.body;
+  const { titulo, empresa, descripcion, logoUrl, imagenUrl, tipoVacante, num_telefonico } = req.body;
   const idUsuario = req.params.idUsuario;
 
-  const query = "INSERT INTO ofertas_laborales (empresa, descripcion, logo_url, imagen_url, tipoVacante, num_telefonico, usuario_id) VALUES (?, ?, ?, ?, ?, ?, ?)";
-  const values = [empresa, descripcion, logoUrl, imagenUrl, tipoVacante, num_telefonico, idUsuario];
+  const query = "INSERT INTO ofertas_laborales (titulo,empresa, descripcion, logo_url, imagen_url, tipoVacante, num_telefonico, usuario_id) VALUES (?,?, ?, ?, ?, ?, ?, ?)";
+  const values = [titulo,empresa, descripcion, logoUrl, imagenUrl, tipoVacante, num_telefonico, idUsuario];
 
   bd.query(query, values, (err, result) => {
     if (err) {
@@ -77,6 +77,25 @@ router.get('/ofertas-laborales/tipo/:tipoVacante', (req, res) => {
       res.status(500).json({ error: "Error al obtener ofertas laborales" });
     } else {
       res.status(200).json(ofertas);
+    }
+  });
+});
+
+//* Ruta para obtener ofertas laborales por tipo y ID de usuario
+router.get('/ofertas-laborales-usuario/:idUsuario/tipo/:tipoVacante', (req, res) => {
+  const tipoVacante = req.params.tipoVacante;
+  const idUsuario = req.params.idUsuario;
+
+  const query = "SELECT * FROM ofertas_laborales WHERE tipoVacante = ? AND usuario_id = ?";
+
+  bd.query(query, [tipoVacante, idUsuario], (err, ofertas) => {
+    if (err) {
+      console.error(err);
+      res.status(500).json({ error: "Error al obtener ofertas laborales" });
+    } else if (ofertas.length > 0) {
+      res.status(200).json(ofertas);
+    } else {
+      res.status(404).json({ error: "No se encontraron ofertas laborales para este usuario y tipo de vacante" });
     }
   });
 });
