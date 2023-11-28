@@ -1,6 +1,7 @@
 const express = require('express');
 const bd = require("../config/bd");
 const router = express.Router();
+const ofertascontrollers = require("../controllers/ofertascontrollers");
 
 // Ruta para crear una oferta laboral por usuario
 router.post('/ofertas-laborales/:idUsuario', (req, res) => {
@@ -49,6 +50,7 @@ router.get('/ofertas-laborales', (req, res) => {
   });
 });
 
+
 // Ruta para obtener una oferta laboral por ID
 router.get('/ofertas-laborales/:id', (req, res) => {
   const id = req.params.id;
@@ -65,6 +67,9 @@ router.get('/ofertas-laborales/:id', (req, res) => {
     }
   });
 });
+
+router.get('/contador', ofertascontrollers.getJobOffersCount);
+
 
 // Ruta para obtener ofertas laborales por tipo de vacante
 router.get('/ofertas-laborales/tipo/:tipoVacante', (req, res) => {
@@ -149,5 +154,9 @@ router.delete('/ofertas-laborales/:id', (req, res) => {
     }
   });
 });
+
+
+
+
 
 module.exports = router;
